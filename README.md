@@ -2,8 +2,8 @@
 https://r301.kilya.coop/
 
 Identifiants:
-admin    admin
-
+Directeur = id ==> admin    mdp ==> admin
+Joueur = id ==> player mdp ==>admin
 ## Configuration Apache
 ### MODs à installer
 php

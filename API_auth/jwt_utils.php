@@ -80,4 +80,21 @@ function get_bearer_token() {
     return null;
 }
 
+
+function isValidUser($login, $password){
+    global $linkpdo;
+    $stmt = $linkpdo->prepare(
+        'SELECT login, password, role FROM user_r401 WHERE login = :login'
+    );
+    $stmt->execute([
+        'login'=> $login,
+        'password' => $password
+    ]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($user) {
+        return $user; // on renvoie les infos utiles
+    }
+    return false;
+}
+
 ?>
