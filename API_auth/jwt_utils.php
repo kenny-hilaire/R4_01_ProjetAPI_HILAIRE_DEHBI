@@ -81,8 +81,7 @@ function get_bearer_token() {
 }
 
 
-function isValidUser($login, $password){
-    global $linkpdo;
+function isValidUser($login, $password, $linkpdo){
     $stmt = $linkpdo->prepare(
         'SELECT login, password, role FROM user_r401 WHERE login = :login'
     );

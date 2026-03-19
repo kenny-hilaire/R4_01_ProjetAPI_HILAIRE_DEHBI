@@ -11,7 +11,8 @@ class UtilisateurDAO {
     private connexionBD $authDatabase;
 
     public function __construct() {
-        $this->database = DatabaseHandler::getInstance();
+        $this->$authDatabase = connexionBD::getInstance();
+        $this->$database = DatabaseHandler::getInstance();
     }
 
     public static function getInstance(): UtilisateurDAO {
@@ -20,10 +21,4 @@ class UtilisateurDAO {
         }
         return self::$instance;
     }
-
-    public function getUtilisateur(string $username) {
-       
-    }
-
-
 }

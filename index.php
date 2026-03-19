@@ -16,7 +16,7 @@ $requestUri = $_SERVER["REQUEST_URI"];
 $route = $requestUri;
 if (str_starts_with($route, BASE_PATH)) {
     $route = substr($route, strlen(BASE_PATH));
-    $route = preg_replace('/\.php$/', '', $route);
+   // $route = preg_replace('/\.php$/', '', $route);
 }
 if ($route === '' || $route === false) {
     $route = '/login';

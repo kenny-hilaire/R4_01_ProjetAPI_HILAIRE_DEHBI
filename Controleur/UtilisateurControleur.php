@@ -11,6 +11,7 @@ use R301\Modele\Joueur\JoueurStatut;
 use R301\Modele\Statistiques\StatistiquesEquipe;
 use R301\Modele\Statistiques\StatistiquesJoueurs;
 use R301\Modele\Utilisateur\UtilisateurDAO;
+use R301\API_auth\connexionBD;
 
 class UtilisateurControleur {
     private static ?UtilisateurControleur $instance = null;
@@ -30,6 +31,9 @@ class UtilisateurControleur {
     public function seConnecter(string $username, string $password): bool {
         $utilisateurEssayantDeSeConnecter = $this->utilisateurs->getUtilisateur($username);
 
+        if ($utilisateurEssayantDeSeConnecter === null) {
+            echo "l'utilisateur n'existe pas";
+    }
         if ($utilisateurEssayantDeSeConnecter->getMotDePasse() == $password) {
             session_set_cookie_params(1800);
             ini_set('session.gc_maxlifetime', 1800);
