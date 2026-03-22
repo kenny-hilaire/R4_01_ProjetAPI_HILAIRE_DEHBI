@@ -3,16 +3,13 @@
 namespace R301\Modele\Utilisateur;
 
 use R301\Modele\DatabaseHandler;
-use R301\API_auth\connexionBD;
 
 class UtilisateurDAO {
     private static ?UtilisateurDAO $instance = null;
     private readonly DatabaseHandler $database;
-    private connexionBD $authDatabase;
 
     public function __construct() {
-        $this->$authDatabase = connexionBD::getInstance();
-        $this->$database = DatabaseHandler::getInstance();
+        $this->database = DatabaseHandler::getInstance();
     }
 
     public static function getInstance(): UtilisateurDAO {
@@ -20,5 +17,19 @@ class UtilisateurDAO {
             self::$instance = new UtilisateurDAO();
         }
         return self::$instance;
+    }
+
+    public getUtilisateur(string $login){
+        $query = 'SELECT * FROM utilisateurs WHERE login = :login';
+        $statement=$this->database->pdo()->prepare($query);
+        $statement->bindValue(':statut', $statut->name);
+        if ($statement->execute()){
+            return array_map(
+                function($joueur) { return $this->mapToJoueur($joueur); },
+                $statement->fetchAll(PDO::FETCH_ASSOC)
+            );
+        } else {
+            exit();
+        }
     }
 }

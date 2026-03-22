@@ -14,7 +14,7 @@ namespace R301\API_auth;
         }      
     }
 
-    public function getConnection() : PDO{
+    public function getConnexion() : \PDO{
         return $this->pdo;
     }
 
