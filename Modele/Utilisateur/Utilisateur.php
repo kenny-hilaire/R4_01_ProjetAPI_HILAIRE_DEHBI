@@ -26,5 +26,9 @@ class Utilisateur {
     {
         return $this->motDePasse;
     }
+    
+    public function getRole(): ?string {
+        return $this->role;
+    }
 }
 

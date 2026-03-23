@@ -1,0 +1,44 @@
+<h1>Ajouter un joueur</h1>
+<?php
+
+use R301\ApiClient\ApiClient;
+use R301\Vue\Component\Formulaire;
+
+$token = $_SESSION['token'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['nom'], $_POST['prenom'], $_POST['numeroDeLicence'],
+             $_POST['dateDeNaissance'], $_POST['tailleEnCm'], $_POST['poidsEnKg'], $_POST['statut'])
+) {
+    $reponse = ApiClient::post('/joueurs', [
+        'nom'             => $_POST['nom'],
+        'prenom'          => $_POST['prenom'],
+        'numeroDeLicence' => $_POST['numeroDeLicence'],
+        'dateDeNaissance' => $_POST['dateDeNaissance'],
+        'tailleEnCm'      => (int) $_POST['tailleEnCm'],
+        'poidsEnKg'       => (int) $_POST['poidsEnKg'],
+        'statut'          => $_POST['statut'],
+    ], $token);
+
+    if ($reponse['status'] === 201 || $reponse['status'] === 200) {
+        header('Location: ' . BASE_PATH . '/joueur');
+        exit;
+    } else {
+        $erreur = $reponse['data']['message'] ?? "Erreur lors de la création du joueur";
+    }
+} else {
+    $formulaire = new Formulaire(BASE_PATH . "/joueur/ajouter");
+    $formulaire->setText("Nom", "nom");
+    $formulaire->setText("Prenom", "prenom");
+    $formulaire->setText("Numéro de license", "numeroDeLicence", "00042");
+    $formulaire->setDate("Date de naissance", "dateDeNaissance");
+    $formulaire->setText("Taille (en cm)", "tailleEnCm");
+    $formulaire->setText("Poids (en kg)", "poidsEnKg");
+    $formulaire->setSelect("Statut", ["ACTIF", "BLESSE", "ABSENT", "SUSPENDU"], "statut");
+    $formulaire->addButton("Submit", "create", "valider", "Valider");
+    echo $formulaire;
+}
+
+if (isset($erreur)) {
+    echo '<p style="color:red;">' . htmlspecialchars($erreur) . '</p>';
+}

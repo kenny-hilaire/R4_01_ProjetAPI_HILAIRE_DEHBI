@@ -1,17 +1,19 @@
-
 <?php
 
-use R301\Controleur\UtilisateurControleur;
-use R301\Modele\Utilisateur\UtilisateurDAO;
+use R301\ApiClient\ApiClient;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["username"]) && isset($_POST["password"])) {
-    $controleur = UtilisateurControleur::getInstance();
 
-    if ($controleur->seConnecter(trim($_POST["username"]), trim($_POST["password"]))) {
+    $reponse = ApiClient::login(trim($_POST["username"]), trim($_POST["password"]));
+
+    if ($reponse['status'] === 200 && isset($reponse['data']['token'])) {
+        // On stocke le JWT en session
+        $_SESSION['token'] = $reponse['data']['token'];
+        $_SESSION['username'] = trim($_POST["username"]);
         header("Location: " . BASE_PATH . "/joueur");
         die();
     } else {
-        $erreur = "Le nom d'Utilisateur ou le mot de passe est incorrect";
+        $erreur = "Le nom d'utilisateur ou le mot de passe est incorrect";
     }
 }
 ?>
@@ -26,9 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["username"]) && isset($
                         <label for="username">Username : </label>
                     </div>
                     <div class="col-80">
-                        <input type="text" id="username" name="username"/><br> 
+                        <input type="text" id="username" name="username"/><br>
                     </div>
-                </div> 
+                </div>
                 <div class="row">
                     <div class="col-20">
                         <label for="password">Password : </label>

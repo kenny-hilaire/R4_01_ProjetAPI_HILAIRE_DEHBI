@@ -1,8 +1,8 @@
 <?php
 //on met en place une api donc c'est des données sous format json que l'on va utiliser
-header("Content-Type: application/json")
-require_once "connexion.php"
-require_once "jwt_utils.php"
+header("Content-Type: application/json");
+require_once "connexion.php";
+require_once "jwt_utils.php";
 require_once '../../chuckapietu/v1/functions.php';
 
 
