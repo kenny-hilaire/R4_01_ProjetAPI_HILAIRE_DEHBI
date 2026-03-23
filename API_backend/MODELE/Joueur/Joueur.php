@@ -4,7 +4,7 @@ namespace R301\Modele\Joueur;
 
 use DateTime;
 
-class Joueur {
+class Joueur implements \JsonSerializable{
     private int $joueurId;
     private string $nom;
     private string $prenom;
@@ -121,5 +121,18 @@ class Joueur {
     {
         $this->statut = $statut;
     }
+
+    public function jsonSerialize() : mixed {
+    return [
+        'joueurId'        => $this->joueurId,
+        'nom'             => $this->nom,
+        'prenom'          => $this->prenom,
+        'numeroDeLicence' => $this->numeroDeLicence,
+        'dateDeNaissance' => $this->dateDeNaissance->format('Y-m-d'),
+        'tailleEnCm'      => $this->tailleEnCm,
+        'poidsEnKg'       => $this->poidsEnKg,
+        'statut'          => $this->statut?->name
+    ];
+}
 }
 
