@@ -128,12 +128,9 @@ class StatistiquesJoueurs {
         }
     }
 
-    public function pourcentageDeMatchsGagnes(Joueur $joueur): ?float {
+    public function pourcentageDeMatchsGagnes(Joueur $joueur): ?int {
         if ($this->nbMatchsJoues($joueur) > 0) {
-            return round(
-                $this->nbMatchsGagnes($joueur) / $this->nbMatchsJoues($joueur) * 100,
-                2
-            );
+            return $this->nbMatchsGagnes($joueur) / $this->nbMatchsJoues($joueur) * 100;
         } else {
             return null;
         }

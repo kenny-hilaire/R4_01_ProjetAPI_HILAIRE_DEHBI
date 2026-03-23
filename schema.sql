@@ -1,6 +1,6 @@
 create database r301;
 
-CREATE USER 'r3.01'@'localhost' IDENTIFIED BY '7z3AgWdX54Zkq5!';
+CREATE USER 'r301'@'localhost' IDENTIFIED BY '7z3AgWdX54Zkq5!';
 GRANT ALL PRIVILEGES ON r301.* TO 'r301'@'localhost';
 FLUSH PRIVILEGES;
 

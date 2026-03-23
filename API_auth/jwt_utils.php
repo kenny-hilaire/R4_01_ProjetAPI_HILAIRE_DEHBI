@@ -83,17 +83,35 @@ function get_bearer_token() {
 
 function isValidUser($login, $password, $linkpdo){
     $stmt = $linkpdo->prepare(
-        'SELECT login, password, role FROM user_r401 WHERE login = :login'
+        'SELECT login, mot_de_passe, role FROM users WHERE login = :login'
     );
     $stmt->execute([
         'login'=> $login,
-        'password' => $password
     ]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($user) {
-        return $user; // on renvoie les infos utiles
-    }
-    return false;
+		if (password_verify($password, $user['mot_de_passe'])) {
+			return $user;
+		}
+	}
+return false;
 }
 
+function deliver_response($status_code, $status_message, $data =null){
+        //Parametrage de l'entete HTTP
+        http_response_code($status_code); //Utilise un message standardisé en fonction du code HTTP
+        //header('HTTP/1.1 $status_code $status_message');//Permet de personaliser le message associé au code HTTP
+        header('Content-Type:application/json;charset=utf-8');//indique au client le format de la reponse
+        $response['status_code'] = $status_code;
+        $response['status_message'] = $status_message;
+        $response['data'] = $data;
+        ///Mapping de la reponse au format JSON
+        $json_response = json_encode($response);
+        if($json_response===false){
+            die('json encode ERROR : '.json_last_error_msg());
+        }
+        ///Affichage de la reponse (Retourné au cliet)
+        echo $json_response;
+        die();
+   }
 ?>
