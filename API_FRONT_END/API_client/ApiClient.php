@@ -1,6 +1,5 @@
-    <?php
-
-namespace R301\ApiClient;
+<?php
+namespace R301\API_client;
 
 /**
  * Classe utilitaire pour appeler les APIs backend via cURL.
@@ -60,43 +59,42 @@ class ApiClient {
      * Méthode centrale : exécute la requête cURL.
      */
     private static function request(string $method, string $url, ?array $body, ?string $token): array {
-        $ch = curl_init();
+        $headers = [
+            'Content-Type: application/json',
+            'Accept: application/json'
+        ];
 
-        $headers = ['Content-Type: application/json', 'Accept: application/json'];
         if ($token !== null) {
             $headers[] = 'Authorization: Bearer ' . $token;
         }
 
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        $options = [
+            'http' => [
+                'method'        => $method,
+                'header'        => implode("\r\n", $headers),
+                'ignore_errors' => true,
+                'timeout'       => 10
+            ]
+        ];
 
-        switch ($method) {
-            case 'POST':
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
-                break;
-            case 'PUT':
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
-                break;
-            case 'DELETE':
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-                break;
+        if ($body !== null) {
+            $options['http']['content'] = json_encode($body);
         }
 
-        $responseBody = curl_exec($ch);
-        $httpStatus   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError    = curl_error($ch);
-        curl_close($ch);
+        $context = stream_context_create($options);
+        $responseBody = file_get_contents($url, false, $context);
 
-        if ($curlError) {
-            error_log("ApiClient cURL error [$method $url]: $curlError");
-            return ['status' => 0, 'data' => null, 'error' => $curlError];
+        $httpStatus = 0;
+        if (isset($http_response_header[0]) && preg_match('#HTTP/\S+\s+(\d{3})#', $http_response_header[0], $matches)) {
+            $httpStatus = (int)$matches[1];
+        }
+
+        if ($responseBody === false) {
+            return ['status' => $httpStatus, 'data' => null, 'error' => 'HTTP request failed'];
         }
 
         $decoded = json_decode($responseBody, true);
+
         return [
             'status' => $httpStatus,
             'data'   => $decoded['data'] ?? $decoded ?? null,

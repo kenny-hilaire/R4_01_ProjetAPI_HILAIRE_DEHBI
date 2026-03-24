@@ -1,9 +1,6 @@
 RewriteEngine On
-RewriteBase /API_FRONT_END/
+RewriteBase /ProjetAPI/API_FRONT_END/
 
-# Servir les fichiers statiques (CSS, JS, images) directement
-RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule ^ - [L]
-
-# Tout le reste passe par index.php
-RewriteRule ^ index.php [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

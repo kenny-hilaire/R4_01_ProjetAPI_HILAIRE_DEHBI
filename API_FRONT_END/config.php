@@ -1,18 +1,26 @@
 <?php
 
-// =====================================================================
-// CONFIGURATION DES URLs DES APIs
-// Modifier ces constantes quand les URLs alwaysdata sont connues
-// =====================================================================
+// // =====================================================================
+// // CONFIGURATION DES URLs DES APIs
+// // Modifier ces constantes quand les URLs alwaysdata sont connues
+// // =====================================================================
 
-// URL de l'API d'authentification (compte alwaysdata dédié à l'auth)
-define('AUTH_API_URL', 'https://TON_COMPTE_AUTH.alwaysdata.net/API_auth');
+// // URL de l'API d'authentification (compte alwaysdata dédié à l'auth)
+// define('AUTH_API_URL', 'https://TON_COMPTE_AUTH.alwaysdata.net/API_auth');
 
-// URL du backend (compte alwaysdata dédié au backend)
-define('BACKEND_API_URL', 'https://TON_COMPTE_BACKEND.alwaysdata.net/API_BACK_END');
+// // URL du backend (compte alwaysdata dédié au backend)
+// define('BACKEND_API_URL', 'https://TON_COMPTE_BACKEND.alwaysdata.net/API_BACK_END');
 
-// Base path du frontend (sous-dossier sur alwaysdata)
-define('BASE_PATH', '/API_FRONT_END');
+// // Base path du frontend (sous-dossier sur alwaysdata)
+// define('BASE_PATH', '/API_FRONT_END');
 
-// Clé secrète partagée pour vérifier les JWT (doit être identique à celle de l'API auth)
+// // Clé secrète partagée pour vérifier les JWT (doit être identique à celle de l'API auth)
+// define('JWT_SECRET', 'secret');
+
+
+define('AUTH_API_URL', 'http://localhost/ProjetAPI/API_auth');
+define('BACKEND_API_URL', 'http://localhost/ProjetAPI/API_backend');
+define('BASE_PATH', '/ProjetAPI/API_FRONT_END');
+
 define('JWT_SECRET', 'secret');
+?>  
