@@ -8,7 +8,7 @@ namespace R301\API_auth;
     
      public function __construct(){
         try {
-            $this->pdo = new \PDO("mysql:host=localhost;dbname=authentification_r401;charset=utf8",'root','');
+            $this->pdo = new \PDO("mysql:host=localhost;dbname=authentification_r401;charset=utf8",'root','$iutinfo');
         } catch (Exception $e) {
             die("Erreur de connexion : " . $e->getMessage());
         }      
