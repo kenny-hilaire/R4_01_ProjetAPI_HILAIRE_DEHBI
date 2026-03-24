@@ -6,9 +6,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["username"]) && isset($
 
     $reponse = ApiClient::login(trim($_POST["username"]), trim($_POST["password"]));
 
-    if ($reponse['status'] === 200 && isset($reponse['data']['token'])) {
-        // On stocke le JWT en session
-        $_SESSION['token'] = $reponse['data']['token'];
+    if ($reponse['status'] === 200 && isset($reponse['data'])) {
+        $_SESSION['token'] = $reponse['data'];
         $_SESSION['username'] = trim($_POST["username"]);
         header("Location: " . BASE_PATH . "/joueur");
         die();
