@@ -1,6 +1,6 @@
 <?php
 
-use R301\ApiClient\ApiClient;
+use R301\API_client\ApiClient;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['commentaireId'])) {
     $reponse = ApiClient::delete('/commentaires/' . (int)$_POST['commentaireId'], $_SESSION['token']);

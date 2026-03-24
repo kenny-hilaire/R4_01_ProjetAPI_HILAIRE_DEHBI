@@ -1,7 +1,7 @@
 <h1>Modifier un joueur</h1>
 <?php
 
-use R301\ApiClient\ApiClient;
+use R301\API_client\ApiClient;
 use R301\Vue\Component\Formulaire;
 
 $token = $_SESSION['token'];

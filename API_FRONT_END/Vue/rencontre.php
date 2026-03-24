@@ -1,6 +1,6 @@
 <?php
 
-use R301\ApiClient\ApiClient;
+use R301\API_client\ApiClient;
 
 $token = $_SESSION['token'];
 

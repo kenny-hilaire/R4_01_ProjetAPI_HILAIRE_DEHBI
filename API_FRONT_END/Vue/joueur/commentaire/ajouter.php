@@ -1,6 +1,6 @@
 <?php
 
-use R301\ApiClient\ApiClient;
+use R301\API_client\ApiClient;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['joueurId'], $_POST['contenu'])) {
     $reponse = ApiClient::post('/joueurs/' . (int)$_POST['joueurId'] . '/commentaires', [

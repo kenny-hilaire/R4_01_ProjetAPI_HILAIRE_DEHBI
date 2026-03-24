@@ -1,6 +1,6 @@
 <?php
 
-use R301\ApiClient\ApiClient;
+use R301\API_client\ApiClient;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $reponse = ApiClient::delete('/joueurs/' . (int)$_POST['id'], $_SESSION['token']);
