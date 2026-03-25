@@ -52,7 +52,7 @@ switch($ressource){
         require_once __DIR__.'/routes/apiRencontres.php';
         break;
     case 'participations':
-        require_once __DIR__.'/routes/apiParticipations.php';
+        require_once __DIR__.'/routes/api_feuille_de_match.php';
         break;
     case 'statistiques':
         require_once __DIR__.'/routes/apiStatistiques.php';

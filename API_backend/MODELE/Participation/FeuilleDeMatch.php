@@ -6,7 +6,7 @@ use R301\Modele\Joueur\Joueur;
 use R301\Modele\Joueur\JoueurStatut;
 use R301\Modele\Rencontre\Rencontre;
 
-class FeuilleDeMatch {
+class FeuilleDeMatch implements \JsonSerializable{
     private readonly array $participants;
 
     public function __construct(array $participants) {
@@ -71,5 +71,12 @@ class FeuilleDeMatch {
         }
         return true;
     }
+    public function jsonSerialize(): mixed {
+    return [
+        'participants' => $this->participants,   // chaque Participation appelle son propre jsonSerialize()
+        'estComplete'  => $this->estComplete(),
+        'estEvaluee'   => $this->estEvalue(),
+    ];
+}
 }
 

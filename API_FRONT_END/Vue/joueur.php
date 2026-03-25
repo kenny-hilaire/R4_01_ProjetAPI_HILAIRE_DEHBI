@@ -4,7 +4,6 @@ use R301\API_client\ApiClient;
 
 $token = $_SESSION['token'];
 
-// Recherche ou liste complète
 $queryParams = [];
 if (isset($_GET['recherche']) && $_GET['recherche'] !== '') {
     $queryParams['recherche'] = $_GET['recherche'];
@@ -31,10 +30,10 @@ $joueurs = $reponse['data'] ?? [];
             <div class="invCol-80">
                 <select name="statut" id="statut">
                     <option value="">Tous</option>
-                    <option value="ACTIF"     <?= (isset($_GET['statut']) && $_GET['statut'] === "ACTIF")     ? 'selected' : '' ?>>Actif</option>
-                    <option value="BLESSE"    <?= (isset($_GET['statut']) && $_GET['statut'] === "BLESSE")    ? 'selected' : '' ?>>Blessé</option>
-                    <option value="ABSENT"    <?= (isset($_GET['statut']) && $_GET['statut'] === "ABSENT")    ? 'selected' : '' ?>>Absent</option>
-                    <option value="SUSPENDU"  <?= (isset($_GET['statut']) && $_GET['statut'] === "SUSPENDU")  ? 'selected' : '' ?>>Suspendu</option>
+                    <option value="ACTIF"    <?= (isset($_GET['statut']) && $_GET['statut'] === "ACTIF")    ? 'selected' : '' ?>>Actif</option>
+                    <option value="BLESSE"   <?= (isset($_GET['statut']) && $_GET['statut'] === "BLESSE")   ? 'selected' : '' ?>>Blessé</option>
+                    <option value="ABSENT"   <?= (isset($_GET['statut']) && $_GET['statut'] === "ABSENT")   ? 'selected' : '' ?>>Absent</option>
+                    <option value="SUSPENDU" <?= (isset($_GET['statut']) && $_GET['statut'] === "SUSPENDU") ? 'selected' : '' ?>>Suspendu</option>
                 </select>
             </div>
             <div class="invCol-20">
@@ -59,13 +58,13 @@ $joueurs = $reponse['data'] ?? [];
 
         <?php foreach ($joueurs as $joueur) { ?>
             <tr>
-                <td><?php echo htmlspecialchars($joueur['numeroDeLicence']) ?></td>
-                <td><?php echo htmlspecialchars($joueur['nom']) ?></td>
-                <td><?php echo htmlspecialchars($joueur['prenom']) ?></td>
-                <td><?php echo htmlspecialchars($joueur['dateDeNaissance']) ?></td>
-                <td><?php echo htmlspecialchars($joueur['tailleEnCm']) ?> cm</td>
-                <td><?php echo htmlspecialchars($joueur['poidsEnKg']) ?> kg</td>
-                <td><?php echo htmlspecialchars($joueur['statut']) ?></td>
+                <td><?php echo htmlspecialchars($joueur['numero_licence'] ?? '') ?></td>
+                <td><?php echo htmlspecialchars($joueur['nom'] ?? '') ?></td>
+                <td><?php echo htmlspecialchars($joueur['prenom'] ?? '') ?></td>
+                <td><?php echo htmlspecialchars($joueur['date_naissance'] ?? '') ?></td>
+                <td><?php echo htmlspecialchars($joueur['taille'] ?? '') ?> cm</td>
+                <td><?php echo htmlspecialchars($joueur['poids'] ?? '') ?> kg</td>
+                <td><?php echo htmlspecialchars($joueur['statut'] ?? '') ?></td>
                 <td class="actions">
                     <form action="<?= BASE_PATH ?>/joueur/modifier" method="get">
                         <button class="update" type="submit" name="id" value="<?php echo $joueur['joueurId'] ?>">Modifier</button>
