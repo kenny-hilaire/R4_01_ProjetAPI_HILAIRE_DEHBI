@@ -10,13 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_GET['id'], $_POST['nom'], $_POST['prenom'], $_POST['numeroDeLicence'],
              $_POST['dateDeNaissance'], $_POST['tailleEnCm'], $_POST['poidsEnKg'], $_POST['statut'])
 ) {
+    // On envoie les noms de champs attendus par le backend
     $reponse = ApiClient::put('/joueurs/' . (int)$_GET['id'], [
+        'numero_licence'  => $_POST['numeroDeLicence'],
         'nom'             => $_POST['nom'],
         'prenom'          => $_POST['prenom'],
-        'numeroDeLicence' => $_POST['numeroDeLicence'],
-        'dateDeNaissance' => $_POST['dateDeNaissance'],
-        'tailleEnCm'      => (int) $_POST['tailleEnCm'],
-        'poidsEnKg'       => (int) $_POST['poidsEnKg'],
+        'date_naissance'  => $_POST['dateDeNaissance'],
+        'taille'          => (int) $_POST['tailleEnCm'],
+        'poids'           => (int) $_POST['poidsEnKg'],
         'statut'          => $_POST['statut'],
     ], $token);
 
@@ -42,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     $formulaire = new Formulaire(BASE_PATH . "/joueur/modifier?id=" . $joueur['joueurId']);
     $formulaire->setText("Nom", "nom", "", $joueur['nom']);
     $formulaire->setText("Prenom", "prenom", "", $joueur['prenom']);
-    $formulaire->setText("Numéro de license", "numeroDeLicence", "00042", $joueur['numeroDeLicence']);
-    $formulaire->setDate("Date de naissance", "dateDeNaissance", $joueur['dateDeNaissance']);
-    $formulaire->setText("Taille (en cm)", "tailleEnCm", "", $joueur['tailleEnCm']);
-    $formulaire->setText("Poids (en Kg)", "poidsEnKg", "", $joueur['poidsEnKg']);
+    $formulaire->setText("Numéro de license", "numeroDeLicence", "00042", $joueur['numero_licence']);
+    $formulaire->setDate("Date de naissance", "dateDeNaissance", $joueur['date_naissance']);
+    $formulaire->setText("Taille (en cm)", "tailleEnCm", "", $joueur['taille']);
+    $formulaire->setText("Poids (en Kg)", "poidsEnKg", "", $joueur['poids']);
     $formulaire->setSelect("Statut", ["ACTIF", "BLESSE", "ABSENT", "SUSPENDU"], "statut", $joueur['statut']);
     $formulaire->addButton("Submit", "update", "modifier", "Modifier");
     echo $formulaire;

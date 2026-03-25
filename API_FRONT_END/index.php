@@ -24,8 +24,9 @@ if (preg_match('/\.(?:png|jpg|jpeg|gif|ico|css|js)\??.*$/', $requestUri)) {
 } else {
 
 session_start();
-
-// Toutes les pages sauf /login nécessitent un token en session
+ 
+// On vérifie maintenant token au lieu de username 
+// Toutes les pages sauf /login nécessitent un token en session 
 if (strtok($route, '?') !== "/login" && !isset($_SESSION['token'])) {
     header('Location: ' . BASE_PATH . '/login');
     exit;
