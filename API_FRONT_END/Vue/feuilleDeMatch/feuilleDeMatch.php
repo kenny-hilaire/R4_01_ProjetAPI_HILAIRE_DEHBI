@@ -12,7 +12,7 @@ if (!isset($_GET['id'])) {
 $rencontreId = (int)$_GET['id'];
 
 // Récupérer la feuille de match
-$repFeuille = ApiClient::get('/rencontres/' . $rencontreId . '/feuilleDeMatch', $token);
+$repFeuille = ApiClient::get('/participations/' . $rencontreId . '/feuille', $token);
 if ($repFeuille['status'] !== 200) {
     header("Location: " . BASE_PATH . "/rencontre");
     exit;

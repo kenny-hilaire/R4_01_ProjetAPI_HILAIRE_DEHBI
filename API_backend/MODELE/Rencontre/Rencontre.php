@@ -108,6 +108,7 @@ class Rencontre implements \JsonSerializable{
         'adresse'       => $this->adresse,
         'lieu'          => $this->lieu?->name,
         'resultat'      => $this->resultat?->name,
-    ];
+        'estPassee'     => $this->estPassee(),
+        ];
 }
 }
