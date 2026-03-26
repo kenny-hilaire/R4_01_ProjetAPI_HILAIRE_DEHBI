@@ -3,7 +3,7 @@
 namespace R301\Modele\Rencontre;
 use DateTime;
 
-class Rencontre {
+class Rencontre implements \JsonSerializable{
     private int $rencontreId;
     private DateTime $dateEtHeure;
     private string $equipeAdverse;
@@ -100,4 +100,14 @@ class Rencontre {
     public function estPassee(): bool {
         return $this->dateEtHeure < new DateTime();
     }
+    public function jsonSerialize(): mixed {
+    return [
+        'rencontreId'   => $this->rencontreId,
+        'dateEtHeure'   => $this->dateEtHeure->format('Y-m-d H:i:s'),
+        'equipeAdverse' => $this->equipeAdverse,
+        'adresse'       => $this->adresse,
+        'lieu'          => $this->lieu?->name,
+        'resultat'      => $this->resultat?->name,
+    ];
+}
 }
