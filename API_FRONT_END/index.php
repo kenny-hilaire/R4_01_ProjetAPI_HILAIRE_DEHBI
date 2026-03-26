@@ -1,3 +1,9 @@
+<!-- C'est le routeur. Toutes les requêtes passent par lui. Il fait 3 choses :
+
+Charge la config et l'autoloader
+Vérifie que l'utilisateur est connecté (a un token en session), sinon redirige vers /login
+Inclut la bonne vue selon l'URL demandée -->
+
 <?php
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/Psr4AutoloaderClass.php';
