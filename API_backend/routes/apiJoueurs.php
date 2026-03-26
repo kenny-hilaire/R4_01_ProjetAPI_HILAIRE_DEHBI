@@ -2,6 +2,7 @@
 use R301\Controleur\JoueurControleur;
 
 $ctrl = JoueurControleur::getInstance();
+
         if ($method === 'GET' && $id == null){
             //alors c'est la liste de tout les joueurs
             $joueurs = $ctrl->listerTousLesJoueurs();
@@ -36,10 +37,10 @@ $ctrl = JoueurControleur::getInstance();
             } elseif ($method === 'PUT' && $id !== null) {
             // PUT /joueurs/5 → modifier un joueur
             //on verifie encore que l'utilisateur est directeur 
-            if ($role !== 'directeur') {
+        if ($role !== 'directeur') {
                 deliver_response(403, 'Accès interdit', null);
                 exit;
-            }
+        }
             $data = json_decode(file_get_contents('php://input'), true);
             $result = $ctrl->modifierJoueur(
                 $id,

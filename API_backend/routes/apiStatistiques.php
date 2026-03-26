@@ -17,17 +17,17 @@ if ($method !== 'GET') {
     exit;
 }
 
-// ─── GET /statistiques/equipe ─────────────────────────────────────────────────
+// ------ GET /statistiques/equipe ------------------------------------------------------------------------------------------------─
 if ($sousRessource === 'equipe') {
     $stats = $ctrlStats->getStatistiquesEquipe();
     deliver_response(200, 'Succès', $stats);
 
-// ─── GET /statistiques/joueurs ────────────────────────────────────────────────
+// ------ GET /statistiques/joueurs ------------------------------------------------------------------------------------------------
 } elseif ($sousRessource === 'joueurs' && $idJoueur === null) {
     $stats = $ctrlStats->getStatistiquesJoueurs();
     deliver_response(200, 'Succès', $stats);
-
-// ─── GET /statistiques/joueurs/{id} ──────────────────────────────────────────
+// -----------------------------------------------------------------------------
+// ---- GET /statistiques/joueurs/{id} ------------------------------------------------------------------------------------
 } elseif ($sousRessource === 'joueurs' && $idJoueur !== null) {
     $joueur = $ctrlJoueurs->getJoueurById($idJoueur);
 
@@ -53,7 +53,7 @@ if ($sousRessource === 'equipe') {
 
     deliver_response(200, 'Succès', $result);
 
-// ─── Route inconnue ───────────────────────────────────────────────────────────
+// ------ Route inconnue ------------------------------------------------------------------------------------------------------------------──
 } else {
     deliver_response(404, 'Route statistiques inconnue. Utilisez /statistiques/equipe ou /statistiques/joueurs[/{id}]', null);
 }
