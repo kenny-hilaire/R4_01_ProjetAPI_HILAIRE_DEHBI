@@ -12,12 +12,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
 ) {
     // On envoie les noms de champs attendus par le backend
     $reponse = ApiClient::post('/joueurs', [
-        'numero_licence'  => $_POST['numeroDeLicence'],
+        'numeroDeLicence'  => $_POST['numeroDeLicence'],
         'nom'             => $_POST['nom'],
         'prenom'          => $_POST['prenom'],
-        'date_naissance'  => $_POST['dateDeNaissance'],
-        'taille'          => (int) $_POST['tailleEnCm'],
-        'poids'           => (int) $_POST['poidsEnKg'],
+        'dateDeNaissance'  => $_POST['dateDeNaissance'],
+        'tailleEnCm'          => (int) $_POST['tailleEnCm'],
+        'poidsEnKg'           => (int) $_POST['poidsEnKg'],
         'statut'          => $_POST['statut'],
     ], $token);
 

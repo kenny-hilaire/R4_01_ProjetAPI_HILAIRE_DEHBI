@@ -58,12 +58,12 @@ $joueurs = $reponse['data'] ?? [];
 
         <?php foreach ($joueurs as $joueur) { ?>
             <tr>
-                <td><?php echo htmlspecialchars($joueur['numero_licence'] ?? '') ?></td>
+                <td><?php echo htmlspecialchars($joueur['numeroDeLicence'] ?? '') ?></td>
                 <td><?php echo htmlspecialchars($joueur['nom'] ?? '') ?></td>
                 <td><?php echo htmlspecialchars($joueur['prenom'] ?? '') ?></td>
-                <td><?php echo htmlspecialchars($joueur['date_naissance'] ?? '') ?></td>
-                <td><?php echo htmlspecialchars($joueur['taille'] ?? '') ?> cm</td>
-                <td><?php echo htmlspecialchars($joueur['poids'] ?? '') ?> kg</td>
+                <td><?php echo htmlspecialchars($joueur['dateDeNaissance'] ?? '') ?></td>
+                <td><?php echo htmlspecialchars($joueur['tailleEnCm'] ?? '') ?> cm</td>
+                <td><?php echo htmlspecialchars($joueur['poidsEnKg'] ?? '') ?> kg</td>
                 <td><?php echo htmlspecialchars($joueur['statut'] ?? '') ?></td>
                 <td class="actions">
                     <form action="<?= BASE_PATH ?>/joueur/modifier" method="get">
