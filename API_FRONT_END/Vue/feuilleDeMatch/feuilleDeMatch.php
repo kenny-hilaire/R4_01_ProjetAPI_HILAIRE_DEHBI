@@ -17,10 +17,10 @@ if ($repFeuille['status'] !== 200) {
     header("Location: " . BASE_PATH . "/rencontre");
     exit;
 }
-$feuilleDeMatch = $repFeuille['data'];
+$feuilleDeMatch = $repFeuille['data']??[];
 
 // Récupérer les joueurs sélectionnables
-$repJoueurs = ApiClient::get('/rencontres/' . $rencontreId . '/joueursSelectionnables', $token);
+$repJoueurs = ApiClient::get('/joueurs', $token);
 $joueursSelectionnables = $repJoueurs['data'] ?? [];
 
 $postes = ['TOPLANE', 'JUNGLE', 'MIDLANE', 'ADCARRY', 'SUPPORT'];
@@ -50,7 +50,7 @@ $roles  = ['TITULAIRE', 'REMPLACANT'];
         <?php foreach ($postes as $poste):
             // Trouver le participant à ce poste/rôle dans la feuille
             $participant = null;
-            foreach ($feuilleDeMatch['participations'] as $p) {
+            foreach ($feuilleDeMatch['participants']??[] as $p) {
                 if ($p['poste'] === $poste && $p['titulaireOuRemplacant'] === $role) {
                     $participant = $p;
                     break;
@@ -60,7 +60,7 @@ $roles  = ['TITULAIRE', 'REMPLACANT'];
             // Construire la liste des joueurs sélectionnables pour le select
             $options = '<option value=""></option>';
             foreach ($joueursSelectionnables as $j) {
-                $sel = ($participant && $participant['joueur']['joueurId'] == $j['joueurId']) ? 'selected' : '';
+                $sel = ($participant && $participant['participant']['joueurId'] == $j['joueurId']) ? 'selected' : '';
                 $options .= '<option value="' . $j['joueurId'] . '" ' . $sel . '>'
                           . htmlspecialchars($j['nom'] . ' ' . $j['prenom']) . '</option>';
             }
@@ -68,11 +68,11 @@ $roles  = ['TITULAIRE', 'REMPLACANT'];
             if ($participant) {
                 $dejaDans = false;
                 foreach ($joueursSelectionnables as $j) {
-                    if ($j['joueurId'] == $participant['joueur']['joueurId']) { $dejaDans = true; break; }
+                    if ($j['joueurId'] == $participant['participant']['joueurId']) { $dejaDans = true; break; }
                 }
                 if (!$dejaDans) {
-                    $options .= '<option value="' . $participant['joueur']['joueurId'] . '" selected>'
-                              . htmlspecialchars($participant['joueur']['nom'] . ' ' . $participant['joueur']['prenom'])
+                    $options .= '<option value="' . $participant['participant']['joueurId'] . '" selected>'
+                              . htmlspecialchars($participant['participant']['nom'] . ' ' . $participant['participant']['prenom'])
                               . '</option>';
                 }
             }
@@ -84,7 +84,7 @@ $roles  = ['TITULAIRE', 'REMPLACANT'];
                 <input type="hidden" name="rencontreId" value="<?php echo $rencontreId ?>" />
                 <input type="hidden" name="titulaireOuRemplacant" value="<?php echo $role ?>" />
                 <td><?php echo $poste ?></td>
-                <td><?php if($participant) echo htmlspecialchars($participant['joueur']['nom'] . ' ' . $participant['joueur']['prenom']) ?></td>
+                <td><?php if($participant) echo htmlspecialchars($participant['participant']['nom'] . ' ' . $participant['participant']['prenom']) ?></td>
                 <td>
                     <div class="row">
                         <div>

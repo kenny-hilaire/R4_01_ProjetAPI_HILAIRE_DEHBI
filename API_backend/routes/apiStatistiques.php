@@ -41,7 +41,7 @@ if ($sousRessource === 'equipe') {
     // On construit la réponse pour un joueur précis
     $result = [
         'joueur_id'                         => $joueur->getJoueurId(),
-        'nom'                               => $joueur->getNom(),
+        'nom'                              => $joueur->getNom(),
         'prenom'                            => $joueur->getPrenom(),
         'nb_titularisations'                => $statsJoueurs->nbTitularisations($joueur),
         'nb_remplacant'                     => $statsJoueurs->nbRemplacant($joueur),
