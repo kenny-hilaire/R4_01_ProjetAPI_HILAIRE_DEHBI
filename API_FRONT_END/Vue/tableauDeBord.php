@@ -4,19 +4,25 @@ use R301\API_client\ApiClient;
 
 $token = $_SESSION['token'];
 
-// Récupérer les statistiques équipe + joueurs
+// On récupère les statistiques depuis le backend via GET /statistiques
+// Le backend renvoie un objet avec deux parties : equipe et joueurs
 $repStats = ApiClient::get('/statistiques', $token);
 $stats = $repStats['data'] ?? [];
 
+// Stats globales de l'équipe (victoires, nuls, défaites, pourcentages)
 $statsEquipe  = $stats['equipe']  ?? [];
+
+// Stats par joueur, indexées par joueurId
+// Ex: $statsJoueurs[5] = stats du joueur n°5
 $statsJoueurs = $stats['joueurs'] ?? [];
 
-// Récupérer la liste des joueurs (pour avoir nom/prénom/statut)
+// On récupère aussi la liste complète des joueurs pour avoir nom/prénom/statut
 $repJoueurs = ApiClient::get('/joueurs', $token);
 $joueurs = $repJoueurs['data'] ?? [];
 
 ?>
 
+<!-- Grille de 6 cases : victoires, nuls, défaites + leurs pourcentages -->
 <div class="TripleGrid">
     <div>
         <h1><?php echo $statsEquipe['nbVictoires'] ?? 0; ?></h1>
@@ -44,6 +50,7 @@ $joueurs = $repJoueurs['data'] ?? [];
     </div>
 </div>
 
+<!-- Tableau des statistiques individuelles par joueur -->
 <div class="overflow">
     <table>
         <tr>
@@ -57,13 +64,15 @@ $joueurs = $repJoueurs['data'] ?? [];
             <th style="width:7%;">Pourcentage gagnés</th>
         </tr>
         <?php foreach ($joueurs as $joueur):
-            // Chercher les stats de ce joueur dans statsJoueurs (indexé par joueurId)
             $joueurId = $joueur['joueurId'];
+            // On cherche les stats de ce joueur dans le tableau indexé par joueurId
+            // Si pas de stats pour ce joueur → tableau vide (aucune participation)
             $sj = $statsJoueurs[$joueurId] ?? [];
         ?>
         <tr>
             <td><?php echo htmlspecialchars($joueur['nom'] . ' ' . $joueur['prenom']); ?></td>
             <td><?php echo htmlspecialchars($joueur['statut']); ?></td>
+            <!-- ?? '' ou ?? 0 : valeur par défaut si la stat n'existe pas pour ce joueur -->
             <td><?php echo htmlspecialchars($sj['posteLePlusPerformant'] ?? ''); ?></td>
             <td><?php echo htmlspecialchars($sj['nbRencontresConsecutives'] ?? 0); ?></td>
             <td><?php echo htmlspecialchars($sj['nbTitularisations'] ?? 0); ?></td>
