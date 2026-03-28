@@ -1,3 +1,9 @@
+<!-- C'est le routeur. Toutes les requêtes passent par lui. Il fait 3 choses :
+
+Charge la config et l'autoloader
+Vérifie que l'utilisateur est connecté (a un token en session), sinon redirige vers /login
+Inclut la bonne vue selon l'URL demandée -->
+
 <?php
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/Psr4AutoloaderClass.php';
@@ -24,8 +30,9 @@ if (preg_match('/\.(?:png|jpg|jpeg|gif|ico|css|js)\??.*$/', $requestUri)) {
 } else {
 
 session_start();
-
-// Toutes les pages sauf /login nécessitent un token en session
+ 
+// On vérifie maintenant token au lieu de username 
+// Toutes les pages sauf /login nécessitent un token en session 
 if (strtok($route, '?') !== "/login" && !isset($_SESSION['token'])) {
     header('Location: ' . BASE_PATH . '/login');
     exit;

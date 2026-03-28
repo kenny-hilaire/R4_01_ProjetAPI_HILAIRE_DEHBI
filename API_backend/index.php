@@ -1,6 +1,6 @@
 <?php
 header("Content-Type:application/json");
-require_once __DIR__ . '/../Psr4AutoloaderClass.php';
+require_once __DIR__ . '/Psr4AutoloaderClass.php';
 require_once __DIR__ . '/../API_auth/jwt_utils.php';
 require_once __DIR__ . '/../API_auth/config.php';
 

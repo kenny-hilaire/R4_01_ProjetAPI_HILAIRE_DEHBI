@@ -28,7 +28,7 @@ $ctrl = JoueurControleur::getInstance();
                 $data['numero_licence'],
                 $data['nom'],
                 $data['prenom'],
-                new DateTime($data['date_naissance']),
+                new DateTime($data['numeroDeLicence']),
                 $data['taille'],
                 $data['poids'],
                 $data['statut']
@@ -44,17 +44,17 @@ $ctrl = JoueurControleur::getInstance();
             $data = json_decode(file_get_contents('php://input'), true);
             $result = $ctrl->modifierJoueur(
                 $id,
-                $data['numero_licence'],
+                $data['numeroDeLicence'],
                 $data['nom'],
                 $data['prenom'],
-                new DateTime($data['date_naissance']),
-                $data['taille'],
-                $data['poids'],
+                new DateTime($data['dateDeNaissance']),
+                $data['tailleEnCm'],
+                $data['poidsEnKg'],
                 $data['statut']
             );
             deliver_response(200, 'Joueur modifié avec succès', $result);
         } elseif ($method === 'DELETE' && $id !== null) {
-             // DELETE /joueurs/5 → supprimer un joueur
+             // DELETE /joueurs/5 → supprimer un joueur 
         // Seulement le directeur
         if ($role !== 'directeur') {
             deliver_response(403, 'Accès interdit', null);
