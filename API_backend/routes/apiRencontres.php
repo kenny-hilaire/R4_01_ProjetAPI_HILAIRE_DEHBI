@@ -1,16 +1,15 @@
 <?php
 use R301\Controleur\RencontreControleur;
 use R301\Modele\Rencontre\RencontreLieu;
-use R301\Modele\Rencontre\RencontreResultat;
 
 $ctrl = RencontreControleur::getInstance();
 
-// ─── GET /rencontres ──────────────────────────────────────────────────────────
+// GET /rencontres
 if ($method === 'GET' && $id === null) {
     $rencontres = $ctrl->listerToutesLesRencontres();
     deliver_response(200, 'Succès', $rencontres);
 
-// ─── GET /rencontres/{id} ─────────────────────────────────────────────────────
+// GET /rencontres/{id}
 } elseif ($method === 'GET' && $id !== null) {
     $rencontre = $ctrl->getRenconterById($id);
     if ($rencontre === null) {
@@ -19,21 +18,20 @@ if ($method === 'GET' && $id === null) {
         deliver_response(200, 'Succès', $rencontre);
     }
 
-// ─── POST /rencontres ─────────────────────────────────────────────────────────
+// POST /rencontres
 } elseif ($method === 'POST') {
     if ($role !== 'directeur') {
         deliver_response(403, 'Accès interdit', null);
         exit;
     }
-
     $data = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($data['date_heure'], $data['equipe_adverse'], $data['adresse'], $data['lieu'])) {
-        deliver_response(400, 'Données manquantes (date_heure, equipe_adverse, adresse, lieu)', null);
+    // Le frontend envoie dateHeure, equipeAdverse, adresse, lieu
+    if (!isset($data['dateHeure'], $data['equipeAdverse'], $data['adresse'], $data['lieu'])) {
+        deliver_response(400, 'Données manquantes (dateHeure, equipeAdverse, adresse, lieu)', null);
         exit;
     }
 
-    // lieu est un enum : DOMICILE ou EXTERIEUR
     $lieu = RencontreLieu::fromName($data['lieu']);
     if ($lieu === null) {
         deliver_response(400, 'Valeur invalide pour lieu. Valeurs acceptées : DOMICILE, EXTERIEUR', null);
@@ -41,8 +39,8 @@ if ($method === 'GET' && $id === null) {
     }
 
     $result = $ctrl->ajouterRencontre(
-        new DateTime($data['date_heure']),
-        $data['equipe_adverse'],
+        new DateTime($data['dateHeure']),
+        $data['equipeAdverse'],
         $data['adresse'],
         $lieu
     );
@@ -53,79 +51,68 @@ if ($method === 'GET' && $id === null) {
         deliver_response(400, 'Impossible de créer : la date est déjà passée', null);
     }
 
-// ─── PUT /rencontres/{id} ─────────────────────────────────────────────────────
+// PUT /rencontres/{id}  ou  PUT /rencontres/{id}/resultat
 } elseif ($method === 'PUT' && $id !== null) {
     if ($role !== 'directeur') {
         deliver_response(403, 'Accès interdit', null);
         exit;
     }
 
-    $data = json_decode(file_get_contents('php://input'), true);
+    $sousRoute = $segments[2] ?? null;
 
-    if (!isset($data['date_heure'], $data['equipe_adverse'], $data['adresse'], $data['lieu'])) {
-        deliver_response(400, 'Données manquantes (date_heure, equipe_adverse, adresse, lieu)', null);
-        exit;
-    }
+    // PUT /rencontres/{id}/resultat
+    if ($sousRoute === 'resultat') {
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['resultat'])) {
+            deliver_response(400, 'Donnée manquante (resultat)', null);
+            exit;
+        }
+        $result = $ctrl->enregistrerResultat($id, $data['resultat']);
+        if ($result) {
+            deliver_response(200, 'Résultat enregistré', null);
+        } else {
+            deliver_response(400, 'Impossible : la rencontre n\'est pas encore passée', null);
+        }
 
-    $lieu = RencontreLieu::fromName($data['lieu']);
-    if ($lieu === null) {
-        deliver_response(400, 'Valeur invalide pour lieu. Valeurs acceptées : DOMICILE, EXTERIEUR', null);
-        exit;
-    }
-
-    $result = $ctrl->modifierRencontre(
-        $id,
-        new DateTime($data['date_heure']),
-        $data['equipe_adverse'],
-        $data['adresse'],
-        $lieu
-    );
-
-    if ($result) {
-        deliver_response(200, 'Rencontre modifiée avec succès', null);
+    // PUT /rencontres/{id}  →  modifier la rencontre
     } else {
-        deliver_response(400, 'Impossible de modifier : rencontre déjà passée ou date invalide', null);
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['dateHeure'], $data['equipeAdverse'], $data['adresse'], $data['lieu'])) {
+            deliver_response(400, 'Données manquantes (dateHeure, equipeAdverse, adresse, lieu)', null);
+            exit;
+        }
+        $lieu = RencontreLieu::fromName($data['lieu']);
+        if ($lieu === null) {
+            deliver_response(400, 'Valeur invalide pour lieu', null);
+            exit;
+        }
+        $result = $ctrl->modifierRencontre(
+            $id,
+            new DateTime($data['dateHeure']),
+            $data['equipeAdverse'],
+            $data['adresse'],
+            $lieu
+        );
+        if ($result) {
+            deliver_response(200, 'Rencontre modifiée avec succès', null);
+        } else {
+            deliver_response(400, 'Impossible de modifier : rencontre déjà passée ou date invalide', null);
+        }
     }
 
-// ─── PUT /rencontres/{id}/resultat ────────────────────────────────────────────
-// Enregistrer le résultat d'une rencontre passée
-} elseif ($method === 'PUT' && $id !== null && ($segments[2] ?? null) === 'resultat') {
-    if ($role !== 'directeur') {
-        deliver_response(403, 'Accès interdit', null);
-        exit;
-    }
-
-    $data = json_decode(file_get_contents('php://input'), true);
-
-    if (!isset($data['resultat'])) {
-        deliver_response(400, 'Donnée manquante (resultat). Valeurs acceptées : VICTOIRE, DEFAITE, NUL', null);
-        exit;
-    }
-
-    $result = $ctrl->enregistrerResultat($id, $data['resultat']);
-
-    if ($result) {
-        deliver_response(200, 'Résultat enregistré', null);
-    } else {
-        deliver_response(400, 'Impossible : la rencontre n\'est pas encore passée', null);
-    }
-
-// ─── DELETE /rencontres/{id} ──────────────────────────────────────────────────
+// DELETE /rencontres/{id}
 } elseif ($method === 'DELETE' && $id !== null) {
     if ($role !== 'directeur') {
         deliver_response(403, 'Accès interdit', null);
         exit;
     }
-
     $result = $ctrl->supprimerRencontre($id);
-
     if ($result) {
         deliver_response(200, 'Rencontre supprimée', null);
     } else {
-        deliver_response(400, 'Impossible de supprimer : la rencontre a déjà un résultat', null);
+        deliver_response(400, 'Impossible de supprimer', null);
     }
 
-// ─── Méthode non supportée ────────────────────────────────────────────────────
 } else {
     deliver_response(405, 'Méthode ou route non autorisée', null);
 }

@@ -5,9 +5,7 @@ use R301\Controleur\JoueurControleur;
 $ctrlStats   = StatistiquesControleur::getInstance();
 $ctrlJoueurs = JoueurControleur::getInstance();
 
-// Le 2e segment est l'identifiant de sous-ressource (equipe, joueurs)
-// Le 3e segment est un éventuel id de joueur
-// Rappel : $segments = ['statistiques', sousRessource, idJoueur]
+
 $sousRessource = $segments[1] ?? null;  // 'equipe' ou 'joueurs'
 $idJoueur      = isset($segments[2]) && $segments[2] !== '' ? (int)$segments[2] : null;
 
@@ -17,17 +15,17 @@ if ($method !== 'GET') {
     exit;
 }
 
-// ------ GET /statistiques/equipe ------------------------------------------------------------------------------------------------─
+// GET /statistiques/equipe 
 if ($sousRessource === 'equipe') {
     $stats = $ctrlStats->getStatistiquesEquipe();
     deliver_response(200, 'Succès', $stats);
 
-// ------ GET /statistiques/joueurs ------------------------------------------------------------------------------------------------
+// GET /statistiques/joueurs 
 } elseif ($sousRessource === 'joueurs' && $idJoueur === null) {
     $stats = $ctrlStats->getStatistiquesJoueurs();
     deliver_response(200, 'Succès', $stats);
-// -----------------------------------------------------------------------------
-// ---- GET /statistiques/joueurs/{id} ------------------------------------------------------------------------------------
+
+// GET /statistiques/joueurs/{id} 
 } elseif ($sousRessource === 'joueurs' && $idJoueur !== null) {
     $joueur = $ctrlJoueurs->getJoueurById($idJoueur);
 
@@ -53,7 +51,7 @@ if ($sousRessource === 'equipe') {
 
     deliver_response(200, 'Succès', $result);
 
-// ------ Route inconnue ------------------------------------------------------------------------------------------------------------------──
+// Route inconnue
 } else {
     deliver_response(404, 'Route statistiques inconnue. Utilisez /statistiques/equipe ou /statistiques/joueurs[/{id}]', null);
 }
