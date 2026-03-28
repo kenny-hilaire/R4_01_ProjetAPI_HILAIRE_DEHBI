@@ -4,10 +4,8 @@ header("Content-Type: application/json");
 require_once "connexionBD.php";
 require_once "jwt_utils.php";
 require_once "config.php";
+
 use R301\API_auth\connexionBD;
-
-
-
 
 $linkpdo = new connexionBD();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

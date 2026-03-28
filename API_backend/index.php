@@ -9,60 +9,67 @@ $loader = new Psr4AutoloaderClass;
 $loader->register();
 $loader->addNamespace('R301', __DIR__);
 
-//verification du token
+// Vérification du token
 $token = get_bearer_token();
-if($token === null || !is_jwt_valid($token, JWT_SECRET)){
-     deliver_response(401, "Erreur votre token est null", null);
+if ($token === null || !is_jwt_valid($token, JWT_SECRET)) {
+    deliver_response(401, "Erreur : token invalide ou absent", null);
     exit;
 }
 
 // On décode le token pour récupérer le rôle
-// 3 parties du token = header.payload.signature
-// On prend la partie du milieu (payload) et on la décode
+// 3 parties : header.payload.signature
+//c'est me payload que je recupere d'ou le tokenParts[1]
 $tokenParts = explode('.', $token);
 $payload = json_decode(base64_decode($tokenParts[1]), true);
 $role = $payload['role']; // "directeur" ou "joueur"
 
-//on lis la route
-$method = $_SERVER['REQUEST_METHOD']; //la methode http est recuperer
-$route = $_SERVER['REQUEST_URI']; //on recup l'url complet de la requete
+// Lecture de la méthode HTTP et de l'URL
+$method = $_SERVER['REQUEST_METHOD'];
+$route  = $_SERVER['REQUEST_URI'];
 
-// On nettoie le préfixe /ProjetAPI/API_backend
+// Suppression du query string éventuel (?foo=bar)
+if (($pos = strpos($route, '?')) !== false) {
+    $route = substr($route, 0, $pos);
+}
+
+// Nettoyage du préfixe de déploiement
 $basePath = '/ProjetAPI/API_backend';
 if (str_starts_with($route, $basePath)) {
     $route = substr($route, strlen($basePath));
-    //on utilise substr pour couper le n premiers caractere du basePath de notre url
-    //on suprime donc les caractere '/ProjetAPI/API_backend' afin de ne conserver que /joueurs/5 et que ce sois plus facile de traiter la requete
 }
 
-// On sépare /joueurs/5 en [joueurs, 5]
-$segments = explode('/', trim($route, '/'));
-$ressource = $segments[0] ?? '';      // joueurs, rencontres, etc.
-$id = isset($segments[1]) && $segments[1] !== '' ? (int)$segments[1] : null;
+// Découpage de l'URL en segments
+$segments  = explode('/', trim($route, '/'));
+$ressource = $segments[0] ?? ''; 
+
+// $id = 2e segment s'il est numérique (utilisé par joueurs, rencontres, participations)
+$id = isset($segments[1]) && $segments[1] !== '' && ctype_digit($segments[1])
+    ? (int)$segments[1]
+    : null;
 
 use R301\Controleur\JoueurControleur;
 use R301\Controleur\ParticipationControleur;
 
-switch($ressource){
+switch ($ressource) {
 
     case 'joueurs':
-        require_once __DIR__.'/routes/apiJoueurs.php';
+        require_once __DIR__ . '/routes/apiJoueurs.php';
         break;
+
     case 'rencontres':
-        require_once __DIR__.'/routes/apiRencontres.php';
+        require_once __DIR__ . '/routes/apiRencontres.php';
         break;
+
     case 'participations':
-        require_once __DIR__.'/routes/api_feuille_de_match.php';
+        // Pour les participations, le fichier s'appelle api_feuille_de_match.php
+        require_once __DIR__ . '/routes/api_feuille_de_match.php';
         break;
+
     case 'statistiques':
-        require_once __DIR__.'/routes/apiStatistiques.php';
+        require_once __DIR__ . '/routes/apiStatistiques.php';
         break;
-         // Route inconnue
+
     default:
         deliver_response(404, 'Route non trouvée', null);
         break;
 }
-
-
-
-?>

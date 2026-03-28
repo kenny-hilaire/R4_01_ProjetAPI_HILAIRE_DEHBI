@@ -12,8 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
 ) {
     // On envoie les modifications au backend via PUT /rencontres/{id}
     $reponse = ApiClient::put('/rencontres/' . (int)$_GET['id'], [
-        'dateHeure'     => $_POST['dateHeure'],
-        'equipeAdverse' => $_POST['equipeAdverse'],
+        'date_heure'     => $_POST['dateHeure'],
+        'equipe_adverse' => $_POST['equipeAdverse'],
         'adresse'       => $_POST['adresse'],
         'lieu'          => $_POST['lieu'],
     ], $token);

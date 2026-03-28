@@ -10,10 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     switch($_POST['action']) {
         case "create":
             if (isset($_POST['joueurId']) && $_POST['joueurId'] !== '') {
-                $reponse = ApiClient::post('/rencontres/' . (int)$_POST['rencontreId'] . '/feuilleDeMatch', [
-                    'joueurId'              => (int)$_POST['joueurId'],
-                    'poste'                 => $_POST['poste'],
-                    'titulaireOuRemplacant' => $_POST['titulaireOuRemplacant'],
+                $reponse = ApiClient::post('/participations', [  // ✅ bonne route
+                    'joueur_id'               => (int)$_POST['joueurId'],       // ✅ snake_case
+                    'rencontre_id'            => (int)$_POST['rencontreId'],    // ✅ ajouté
+                    'poste'                   => $_POST['poste'],
+                    'titulaire_ou_remplacant' => $_POST['titulaireOuRemplacant'], // ✅ snake_case
                 ], $token);
                 if ($reponse['status'] !== 200 && $reponse['status'] !== 201) {
                     error_log("Erreur assignation participant : " . json_encode($reponse));
@@ -23,9 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
         case "update":
             if (isset($_POST['participationId'], $_POST['joueurId']) && $_POST['joueurId'] !== '') {
                 $reponse = ApiClient::put('/participations/' . (int)$_POST['participationId'], [
-                    'joueurId'              => (int)$_POST['joueurId'],
-                    'poste'                 => $_POST['poste'],
-                    'titulaireOuRemplacant' => $_POST['titulaireOuRemplacant'],
+                    'joueur_id'               => (int)$_POST['joueurId'],       // ✅ snake_case
+                    'poste'                   => $_POST['poste'],
+                    'titulaire_ou_remplacant' => $_POST['titulaireOuRemplacant'], // ✅ snake_case
                 ], $token);
                 if ($reponse['status'] !== 200) {
                     error_log("Erreur modification participation : " . json_encode($reponse));
