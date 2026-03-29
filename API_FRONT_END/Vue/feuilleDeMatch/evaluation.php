@@ -32,12 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     }
 
     $rencontreId = (int)$_GET['id'];
-    $repFeuille = ApiClient::get('/rencontres/' . $rencontreId . '/feuilleDeMatch', $token);
+
+    // Correction : même route que feuilleDeMatch.php → /participations/{id}/feuille
+    $repFeuille = ApiClient::get('/participations/' . $rencontreId . '/feuille', $token);
     if ($repFeuille['status'] !== 200) {
         header("Location: " . BASE_PATH . "/rencontre");
         die();
     }
-    $feuilleDeMatch = $repFeuille['data'];
+    $feuilleDeMatch = $repFeuille['data'] ?? [];
 
     $postes = ['TOPLANE', 'JUNGLE', 'MIDLANE', 'ADCARRY', 'SUPPORT'];
     $roles  = ['TITULAIRE', 'REMPLACANT'];
@@ -46,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
 
 <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding-right: 30px">
     <h1>Évaluations</h1>
-    <?php if($feuilleDeMatch['estEvalue']): ?>
+    <?php if($feuilleDeMatch['estEvaluee'] ?? false): ?>
         <div class="etat-feuille-de-match feuille-de-match-complete">TERMINÉES</div>
     <?php else: ?>
         <div class="etat-feuille-de-match feuille-de-match-incomplete">INCOMPLÈTES</div>
@@ -67,7 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
 
             <?php foreach ($postes as $poste):
                 $participant = null;
-                foreach ($feuilleDeMatch['participations'] as $p) {
+                // Le modèle retourne 'participants' (pas 'participations')
+                foreach ($feuilleDeMatch['participants'] ?? [] as $p) {
                     if ($p['poste'] === $poste && $p['titulaireOuRemplacant'] === $role) {
                         $participant = $p;
                         break;
@@ -75,19 +78,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
                 }
                 $selectedPerf = $participant['performance'] ?? null;
 
-                // Construire le select de performance
                 $optionsPerf = '<option value=""></option>';
                 foreach ($performances as $perf) {
                     $sel = ($selectedPerf === $perf) ? 'selected' : '';
                     $optionsPerf .= '<option value="' . $perf . '" ' . $sel . '>' . $perf . '</option>';
                 }
+
+                // Le modèle retourne 'participant' (objet joueur) et 'rencontre' (objet rencontre)
+                $rencontreIdParticipant = $participant['rencontre']['rencontreId'] ?? $rencontreId;
             ?>
             <form action="<?= BASE_PATH ?>/feuilleDeMatch/evaluation" method="post">
                 <tr>
-                    <input type="hidden" name="rencontreId" value="<?php echo $participant ? $participant['rencontreId'] : $rencontreId; ?>" />
+                    <input type="hidden" name="rencontreId" value="<?php echo $rencontreIdParticipant; ?>" />
                     <input type="hidden" name="participationId" value="<?php echo $participant ? $participant['participationId'] : '' ?>" />
                     <td><?php echo $poste ?></td>
-                    <td><?php if($participant) echo htmlspecialchars($participant['joueur']['nom'] . ' ' . $participant['joueur']['prenom']) ?></td>
+                    <td><?php if($participant) echo htmlspecialchars($participant['participant']['nom'] . ' ' . $participant['participant']['prenom']) ?></td>
                     <td><?php if($selectedPerf) echo htmlspecialchars($selectedPerf) ?></td>
                     <td>
                         <div class="row"><div>

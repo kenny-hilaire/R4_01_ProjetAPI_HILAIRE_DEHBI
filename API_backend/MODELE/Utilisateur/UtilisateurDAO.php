@@ -19,10 +19,10 @@ class UtilisateurDAO {
         return self::$instance;
     }
 
-    public getUtilisateur(string $login){
+    public function getUtilisateur(string $login){
         $query = 'SELECT * FROM utilisateurs WHERE login = :login';
         $statement=$this->database->pdo()->prepare($query);
-        $statement->bindValue(':statut', $statut->name);
+        $statement->bindValue(':login', $login);
         if ($statement->execute()){
             return array_map(
                 function($joueur) { return $this->mapToJoueur($joueur); },

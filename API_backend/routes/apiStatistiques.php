@@ -5,53 +5,81 @@ use R301\Controleur\JoueurControleur;
 $ctrlStats   = StatistiquesControleur::getInstance();
 $ctrlJoueurs = JoueurControleur::getInstance();
 
-
-$sousRessource = $segments[1] ?? null;  // 'equipe' ou 'joueurs'
+$sousRessource = $segments[1] ?? null;
 $idJoueur      = isset($segments[2]) && $segments[2] !== '' ? (int)$segments[2] : null;
 
-// Les statistiques sont en lecture seule — on refuse toute autre méthode
 if ($method !== 'GET') {
     deliver_response(405, 'Méthode non autorisée : les statistiques sont en lecture seule', null);
     exit;
 }
 
-// GET /statistiques/equipe 
+// GET /statistiques/equipe
 if ($sousRessource === 'equipe') {
-    $stats = $ctrlStats->getStatistiquesEquipe();
-    deliver_response(200, 'Succès', $stats);
+    $statsObj = $ctrlStats->getStatistiquesEquipe();
 
-// GET /statistiques/joueurs 
+    // On construit le tableau manuellement car StatistiquesEquipe n'implémente pas JsonSerializable
+    // Et on protège contre la division par zéro si aucun match n'est joué
+    $nbVictoires  = $statsObj->nbVictoires();
+    $nbNuls       = $statsObj->nbNuls();
+    $nbDefaites   = $statsObj->nbDefaites();
+    $nbJoues      = $nbVictoires + $nbNuls + $nbDefaites;
+
+    $result = [
+        'nbVictoires'              => $nbVictoires,
+        'nbNuls'                   => $nbNuls,
+        'nbDefaites'               => $nbDefaites,
+        'pourcentageDeVictoires'   => $nbJoues > 0 ? round($nbVictoires / $nbJoues * 100) : 0,
+        'pourcentageDeNuls'        => $nbJoues > 0 ? round($nbNuls       / $nbJoues * 100) : 0,
+        'pourcentageDeDefaites'    => $nbJoues > 0 ? round($nbDefaites   / $nbJoues * 100) : 0,
+    ];
+
+    deliver_response(200, 'Succès', $result);
+
+// GET /statistiques/joueurs
 } elseif ($sousRessource === 'joueurs' && $idJoueur === null) {
-    $stats = $ctrlStats->getStatistiquesJoueurs();
-    deliver_response(200, 'Succès', $stats);
+    $statsObj = $ctrlStats->getStatistiquesJoueurs();
+    $joueurs  = $ctrlJoueurs->listerTousLesJoueurs();
 
-// GET /statistiques/joueurs/{id} 
+    // On construit un tableau par joueur indexé par joueurId
+    $result = [];
+    foreach ($joueurs as $joueur) {
+        $result[] = [
+            'joueurId'                   => $joueur->getJoueurId(),
+            'poste_le_plus_performant'   => $statsObj->posteLePlusPerformant($joueur)?->name,
+            'nb_rencontres_consecutives' => $statsObj->nbRencontresConsecutivesADate($joueur),
+            'nb_titularisations'         => $statsObj->nbTitularisations($joueur),
+            'nb_remplacant'              => $statsObj->nbRemplacant($joueur),
+            'moyenne_evaluations'        => $statsObj->moyenneDesEvaluations($joueur),
+            'pourcentage_matchs_gagnes'  => $statsObj->pourcentageDeMatchsGagnes($joueur),
+        ];
+    }
+
+    deliver_response(200, 'Succès', $result);
+
+// GET /statistiques/joueurs/{id}
 } elseif ($sousRessource === 'joueurs' && $idJoueur !== null) {
     $joueur = $ctrlJoueurs->getJoueurById($idJoueur);
-
     if ($joueur === null) {
         deliver_response(404, 'Joueur non trouvé', null);
         exit;
     }
 
-    $statsJoueurs = $ctrlStats->getStatistiquesJoueurs();
+    $statsObj = $ctrlStats->getStatistiquesJoueurs();
 
-    // On construit la réponse pour un joueur précis
     $result = [
-        'joueur_id'                         => $joueur->getJoueurId(),
-        'nom'                              => $joueur->getNom(),
-        'prenom'                            => $joueur->getPrenom(),
-        'nb_titularisations'                => $statsJoueurs->nbTitularisations($joueur),
-        'nb_remplacant'                     => $statsJoueurs->nbRemplacant($joueur),
-        'moyenne_evaluations'               => $statsJoueurs->moyenneDesEvaluations($joueur),
-        'pourcentage_matchs_gagnes'         => $statsJoueurs->pourcentageDeMatchsGagnes($joueur),
-        'nb_rencontres_consecutives'        => $statsJoueurs->nbRencontresConsecutivesADate($joueur),
-        'poste_le_plus_performant'          => $statsJoueurs->posteLePlusPerformant($joueur)?->name,
+        'joueurId'                   => $joueur->getJoueurId(),
+        'nom'                        => $joueur->getNom(),
+        'prenom'                     => $joueur->getPrenom(),
+        'poste_le_plus_performant'   => $statsObj->posteLePlusPerformant($joueur)?->name,
+        'nb_rencontres_consecutives' => $statsObj->nbRencontresConsecutivesADate($joueur),
+        'nb_titularisations'         => $statsObj->nbTitularisations($joueur),
+        'nb_remplacant'              => $statsObj->nbRemplacant($joueur),
+        'moyenne_evaluations'        => $statsObj->moyenneDesEvaluations($joueur),
+        'pourcentage_matchs_gagnes'  => $statsObj->pourcentageDeMatchsGagnes($joueur),
     ];
 
     deliver_response(200, 'Succès', $result);
 
-// Route inconnue
 } else {
-    deliver_response(404, 'Route statistiques inconnue. Utilisez /statistiques/equipe ou /statistiques/joueurs[/{id}]', null);
+    deliver_response(404, 'Route statistiques inconnue. Utilisez /statistiques/equipe ou /statistiques/joueurs', null);
 }

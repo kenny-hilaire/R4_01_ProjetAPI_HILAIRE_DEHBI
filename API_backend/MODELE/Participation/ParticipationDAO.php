@@ -115,7 +115,9 @@ class ParticipationDAO {
                       note_performance = :note_performance
                   WHERE participation_id = :participation_id';
         $statement=$this->database->pdo()->prepare($query);
-        $statement->bindValue(':note_performance', $participationAModifier->getPerformance()->value);
+        // getPerformance() peut être null (suppression de la performance)
+        $performance = $participationAModifier->getPerformance();
+        $statement->bindValue(':note_performance', $performance?->value, $performance === null ? \PDO::PARAM_NULL : \PDO::PARAM_INT);
         $statement->bindValue(':participation_id', $participationAModifier->getParticipationId());
         return $statement->execute();
     }

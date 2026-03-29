@@ -4,30 +4,27 @@ use R301\API_client\ApiClient;
 
 $token = $_SESSION['token'];
 
-// Récupérer les stats équipe via GET /statistiques/equipe
+// Récupérer les stats équipe
 $repStatsEquipe = ApiClient::get('/statistiques/equipe', $token);
 $statsEquipe = $repStatsEquipe['data'] ?? [];
 
-// Récupérer les stats joueurs via GET /statistiques/joueurs
+// Récupérer les stats joueurs (tableau de tableaux indexés par joueurId)
 $repStatsJoueurs = ApiClient::get('/statistiques/joueurs', $token);
 $statsJoueursRaw = $repStatsJoueurs['data'] ?? [];
 
-// Récupérer la liste des joueurs pour avoir nom/prénom/statut
+// Récupérer la liste des joueurs
 $repJoueurs = ApiClient::get('/joueurs', $token);
 $joueurs = $repJoueurs['data'] ?? [];
 
-// Indexer les stats joueurs par joueurId pour un accès rapide
+// Indexer les stats joueurs par joueurId pour accès rapide
 $statsJoueurs = [];
-if (is_array($statsJoueursRaw)) {
-    foreach ($statsJoueursRaw as $sj) {
-        if (isset($sj['joueurId'])) {
-            $statsJoueurs[$sj['joueurId']] = $sj;
-        }
+foreach ($statsJoueursRaw as $sj) {
+    if (isset($sj['joueurId'])) {
+        $statsJoueurs[$sj['joueurId']] = $sj;
     }
 }
 ?>
 
-<!-- Grille de victoires, nuls, défaites + leurs pourcentages -->
 <div class="TripleGrid">
     <div>
         <h1><?php echo $statsEquipe['nbVictoires'] ?? 0; ?></h1>
@@ -55,7 +52,6 @@ if (is_array($statsJoueursRaw)) {
     </div>
 </div>
 
-<!-- Tableau des statistiques individuelles par joueur  -->
 <div class="overflow">
     <table>
         <tr>
@@ -68,15 +64,11 @@ if (is_array($statsJoueursRaw)) {
             <th style="width:7%;">Moyenne évaluations</th>
             <th style="width:7%;">Pourcentage gagnés</th>
         </tr>
-
-        <!-- On cherche les stats de ce joueur dans le tableau indexé par joueurId
-        Si pas de stats pour ce joueur : tableau vide (aucune participation) -->
         <?php foreach ($joueurs as $joueur):
             $joueurId = $joueur['joueurId'];
             $sj = $statsJoueurs[$joueurId] ?? [];
         ?>
         <tr>
-            <!-- ?? '' ou ?? 0 : valeur par défaut si la stat n'existe pas pour ce joueur -->
             <td><?php echo htmlspecialchars($joueur['nom'] . ' ' . $joueur['prenom']); ?></td>
             <td><?php echo htmlspecialchars($joueur['statut']); ?></td>
             <td><?php echo htmlspecialchars($sj['poste_le_plus_performant'] ?? ''); ?></td>
@@ -89,4 +81,3 @@ if (is_array($statsJoueursRaw)) {
         <?php endforeach; ?>
     </table>
 </div>
-)u
