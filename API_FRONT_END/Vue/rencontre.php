@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     }
 }
 
-// CAS 2 : Affichage de la liste des rencontres (GET)
+// CAS 2 : Affichage de la liste des rencontres 
 $repRencontres = ApiClient::get('/rencontres', $token);
 $rencontres = $repRencontres['data'] ?? [];
 

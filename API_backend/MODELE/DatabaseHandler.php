@@ -15,11 +15,11 @@ class DatabaseHandler {
 
     private function __construct(){
         try{
-            $this->server = "localhost";
-            $this->db = "r301";
-            $this->login = "r301";
-            $this->mdp = "7z3AgWdX54Zkq5!";
-            $this->linkpdo=new PDO("mysql:host=".$this->server.";dbname=".$this->db,$this->login,$this->mdp);
+            $this->server = "mysql-r30-api.alwaysdata.net";
+            $this->db = "r30-api_gestion";
+            $this->login = "r30-api";
+            $this->mdp = "r301APIproject";
+            $this->linkpdo = new PDO("mysql:host=".$this->server.";dbname=".$this->db,$this->login,$this->mdp);
         }catch(Exception $e){
             die("Erreur : ".$e->getMessage());
         }

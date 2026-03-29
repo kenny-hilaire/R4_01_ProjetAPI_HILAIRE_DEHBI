@@ -65,13 +65,13 @@ class ApiClient {
         $context = stream_context_create($options);
         $responseBody = file_get_contents($url, false, $context);
 
-        // 🔍 récupérer le code HTTP
+        // On récupére le code HTTP
         $httpStatus = 0;
         if (isset($http_response_header[0]) && preg_match('#HTTP/\S+\s+(\d{3})#', $http_response_header[0], $matches)) {
             $httpStatus = (int)$matches[1];
         }
 
-        // ❌ erreur réseau
+        // cas d' erreur réseau
         if ($responseBody === false) {
             return [
                 'status' => $httpStatus,
@@ -82,7 +82,7 @@ class ApiClient {
 
         $decoded = json_decode($responseBody, true);
 
-        // ❌ JSON invalide
+        // cas ou le JSON invalide
         if ($decoded === null) {
             return [
                 'status' => $httpStatus,
@@ -91,10 +91,10 @@ class ApiClient {
             ];
         }
 
-        // ✅ CAS NORMAL (API bien formée)
+        
         return [
             'status'  => $httpStatus,
-            'data'    => $decoded['data'] ?? null,               // 🔥 PLUS DE DOUBLE DATA
+            'data'    => $decoded['data'] ?? null,              
             'message' => $decoded['status_message'] ?? null
         ];
     }
