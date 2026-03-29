@@ -69,6 +69,10 @@ switch ($ressource) {
         require_once __DIR__ . '/routes/apiStatistiques.php';
         break;
 
+    case 'commentaires':
+        require_once __DIR__ . '/routes/apiCommentaires.php';
+        break;
+
     default:
         deliver_response(404, 'Route non trouvée', null);
         break;

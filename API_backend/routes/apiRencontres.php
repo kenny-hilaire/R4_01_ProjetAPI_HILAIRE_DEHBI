@@ -1,16 +1,15 @@
 <?php
 use R301\Controleur\RencontreControleur;
 use R301\Modele\Rencontre\RencontreLieu;
-use R301\Modele\Rencontre\RencontreResultat;
 
 $ctrl = RencontreControleur::getInstance();
 
-// ─── GET /rencontres ──────────────────────────────────────────────────────────
+// GET /rencontres
 if ($method === 'GET' && $id === null) {
     $rencontres = $ctrl->listerToutesLesRencontres();
     deliver_response(200, 'Succès', $rencontres);
 
-// ─── GET /rencontres/{id} ─────────────────────────────────────────────────────
+// GET /rencontres/{id}
 } elseif ($method === 'GET' && $id !== null) {
     $rencontre = $ctrl->getRenconterById($id);
     if ($rencontre === null) {
@@ -19,13 +18,14 @@ if ($method === 'GET' && $id === null) {
         deliver_response(200, 'Succès', $rencontre);
     }
 
-// ─── POST /rencontres ─────────────────────────────────────────────────────────
+// POST /rencontres
 } elseif ($method === 'POST') {
     if ($role !== 'directeur') {
         deliver_response(403, 'Accès interdit', null);
         exit;
     }
     $data = json_decode(file_get_contents('php://input'), true);
+
     if (!isset($data['date_heure'], $data['equipe_adverse'], $data['adresse'], $data['lieu'])) {
         deliver_response(400, 'Données manquantes (date_heure, equipe_adverse, adresse, lieu)', null);
         exit;
@@ -47,7 +47,7 @@ if ($method === 'GET' && $id === null) {
         deliver_response(400, 'Impossible de créer : la date est déjà passée', null);
     }
 
-// ─── PUT /rencontres/{id}/resultat ────────────────────────────────────────────
+// PUT /rencontres/{id}/resultat — EN PREMIER obligatoirement
 } elseif ($method === 'PUT' && $id !== null && ($segments[2] ?? null) === 'resultat') {
     if ($role !== 'directeur') {
         deliver_response(403, 'Accès interdit', null);
@@ -65,7 +65,7 @@ if ($method === 'GET' && $id === null) {
         deliver_response(400, 'Impossible : la rencontre n\'est pas encore passée', null);
     }
 
-// ─── PUT /rencontres/{id} ─────────────────────────────────────────────────────
+// PUT /rencontres/{id}
 } elseif ($method === 'PUT' && $id !== null) {
     if ($role !== 'directeur') {
         deliver_response(403, 'Accès interdit', null);
@@ -94,7 +94,7 @@ if ($method === 'GET' && $id === null) {
         deliver_response(400, 'Impossible de modifier : rencontre déjà passée ou date invalide', null);
     }
 
-// ─── DELETE /rencontres/{id} ──────────────────────────────────────────────────
+// DELETE /rencontres/{id}
 } elseif ($method === 'DELETE' && $id !== null) {
     if ($role !== 'directeur') {
         deliver_response(403, 'Accès interdit', null);
@@ -104,10 +104,9 @@ if ($method === 'GET' && $id === null) {
     if ($result) {
         deliver_response(200, 'Rencontre supprimée', null);
     } else {
-        deliver_response(400, 'Impossible de supprimer : la rencontre a déjà un résultat', null);
+        deliver_response(400, 'Impossible de supprimer', null);
     }
 
-// ─── Méthode non supportée ────────────────────────────────────────────────────
 } else {
     deliver_response(405, 'Méthode ou route non autorisée', null);
 }

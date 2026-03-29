@@ -4,21 +4,24 @@ use R301\API_client\ApiClient;
 
 $token = $_SESSION['token'];
 
+// Récupérer les stats équipe
+$repStatsEquipe = ApiClient::get('/statistiques/equipe', $token);
+$statsEquipe = $repStatsEquipe['data'] ?? [];
 
-$repEquipe  = ApiClient::get('/statistiques/equipe', $token);
-$repJoueurs_stats = ApiClient::get('/statistiques/joueurs', $token);
+// Récupérer les stats joueurs (tableau de tableaux indexés par joueurId)
+$repStatsJoueurs = ApiClient::get('/statistiques/joueurs', $token);
+$statsJoueursRaw = $repStatsJoueurs['data'] ?? [];
 
-$statsEquipe  = $repEquipe['data']  ?? [];
-$statsJoueurs = $repJoueurs_stats['data'] ?? [];
-
-// On Récupére la liste des joueurs (nom/prénom/statut)
+// Récupérer la liste des joueurs
 $repJoueurs = ApiClient::get('/joueurs', $token);
 $joueurs = $repJoueurs['data'] ?? [];
 
-// on Indexer les stats joueurs par joueurId pour pouvoir les retrouver
-$statsJoueursParId = [];
-foreach ($statsJoueurs as $sj) {
-    $statsJoueursParId[$sj['joueur_id']] = $sj;
+// Indexer les stats joueurs par joueurId pour accès rapide
+$statsJoueurs = [];
+foreach ($statsJoueursRaw as $sj) {
+    if (isset($sj['joueurId'])) {
+        $statsJoueurs[$sj['joueurId']] = $sj;
+    }
 }
 ?>
 

@@ -7,11 +7,11 @@ use R301\Vue\Component\Formulaire;
 $token = $_SESSION['token'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'
-        && isset($_POST['dateHeure'], $_POST['equipe_adverse'], $_POST['adresse'], $_POST['lieu'])
+        && isset($_POST['dateHeure'], $_POST['equipeAdverse'], $_POST['adresse'], $_POST['lieu'])
 ) {
     $reponse = ApiClient::post('/rencontres', [
         'date_heure'     => $_POST['dateHeure'],
-        'equipe_adverse' => $_POST['equipe_adverse'],
+        'equipe_adverse' => $_POST['equipeAdverse'],
         'adresse'       => $_POST['adresse'],
         'lieu'          => $_POST['lieu'],
     ], $token);
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     $lieux = ['DOMICILE', 'EXTERIEUR'];
     $formulaire = new Formulaire(BASE_PATH . "/rencontre/ajouter");
     $formulaire->setDateTime("Date", "dateHeure", date("Y-m-d H:i"));
-    $formulaire->setText("Equipe adverse", "equipe_adverse");
+    $formulaire->setText("Equipe adverse", "equipeAdverse");
     $formulaire->setText("Adresse", "adresse");
     $formulaire->setSelect("Lieu", $lieux, "lieu");
     $formulaire->addButton("Submit", "create", "Valider", "Valider");
