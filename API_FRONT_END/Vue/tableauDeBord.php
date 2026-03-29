@@ -4,17 +4,22 @@ use R301\API_client\ApiClient;
 
 $token = $_SESSION['token'];
 
-// Récupérer les statistiques équipe + joueurs
-$repStats = ApiClient::get('/statistiques', $token);
-$stats = $repStats['data'] ?? [];
 
-$statsEquipe  = $stats['equipe']  ?? [];
-$statsJoueurs = $stats['joueurs'] ?? [];
+$repEquipe  = ApiClient::get('/statistiques/equipe', $token);
+$repJoueurs_stats = ApiClient::get('/statistiques/joueurs', $token);
 
-// Récupérer la liste des joueurs (pour avoir nom/prénom/statut)
+$statsEquipe  = $repEquipe['data']  ?? [];
+$statsJoueurs = $repJoueurs_stats['data'] ?? [];
+
+// On Récupére la liste des joueurs (nom/prénom/statut)
 $repJoueurs = ApiClient::get('/joueurs', $token);
 $joueurs = $repJoueurs['data'] ?? [];
 
+// on Indexer les stats joueurs par joueurId pour pouvoir les retrouver
+$statsJoueursParId = [];
+foreach ($statsJoueurs as $sj) {
+    $statsJoueursParId[$sj['joueur_id']] = $sj;
+}
 ?>
 
 <div class="TripleGrid">
@@ -57,19 +62,18 @@ $joueurs = $repJoueurs['data'] ?? [];
             <th style="width:7%;">Pourcentage gagnés</th>
         </tr>
         <?php foreach ($joueurs as $joueur):
-            // Chercher les stats de ce joueur dans statsJoueurs (indexé par joueurId)
             $joueurId = $joueur['joueurId'];
-            $sj = $statsJoueurs[$joueurId] ?? [];
+            $sj = $statsJoueursParId[$joueurId] ?? [];
         ?>
         <tr>
             <td><?php echo htmlspecialchars($joueur['nom'] . ' ' . $joueur['prenom']); ?></td>
             <td><?php echo htmlspecialchars($joueur['statut']); ?></td>
-            <td><?php echo htmlspecialchars($sj['posteLePlusPerformant'] ?? ''); ?></td>
-            <td><?php echo htmlspecialchars($sj['nbRencontresConsecutives'] ?? 0); ?></td>
-            <td><?php echo htmlspecialchars($sj['nbTitularisations'] ?? 0); ?></td>
-            <td><?php echo htmlspecialchars($sj['nbRemplacant'] ?? 0); ?></td>
-            <td><?php echo htmlspecialchars($sj['moyenneDesEvaluations'] ?? ''); ?></td>
-            <td><?php echo htmlspecialchars($sj['pourcentageDeMatchsGagnes'] ?? 0); ?></td>
+            <td><?php echo htmlspecialchars($sj['poste_le_plus_performant'] ?? ''); ?></td>
+            <td><?php echo htmlspecialchars($sj['nb_rencontres_consecutives'] ?? 0); ?></td>
+            <td><?php echo htmlspecialchars($sj['nb_titularisations'] ?? 0); ?></td>
+            <td><?php echo htmlspecialchars($sj['nb_remplacant'] ?? 0); ?></td>
+            <td><?php echo htmlspecialchars($sj['moyenne_evaluations'] ?? ''); ?></td>
+            <td><?php echo htmlspecialchars($sj['pourcentage_matchs_gagnes'] ?? 0); ?></td>
         </tr>
         <?php endforeach; ?>
     </table>
